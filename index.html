@@ -3,59 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI POST & GET Test</title>
+    <title>Single Page FastAPI App</title>
+    <style>
+        .view { display: none; }
+        .active { display: block; }
+    </style>
 </head>
 <body>
-    <h1>FastAPI Data Test</h1>
+    <h1>FastAPI Single Page Test</h1>
 
-    <!-- Form to submit data -->
-    <form id="dataForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" required><br><br>
+    <!-- Input View -->
+    <div id="inputView" class="view active">
+        <form id="dataForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required><br><br>
 
-        <label for="value">Value:</label>
-        <input type="number" id="value" required><br><br>
+            <label for="value">Value:</label>
+            <input type="number" id="value" required><br><br>
 
-        <button type="submit">Submit</button>
-    </form>
+            <button type="submit">Submit</button>
+        </form>
+        <h2>Response:</h2>
+        <pre id="response"></pre>
 
-    <h2>Response:</h2>
-    <pre id="response"></pre>
+        <button id="viewDataBtn">View All Stored Data</button>
+    </div>
 
-    <hr>
-
-    <a href="view.html" target="_blank">View All Stored Data</a>
-
-
-    <!-- Button to fetch all stored items -->
-    <button id="viewDataBtn">View All Stored Data</button>
-    <h2>Stored Items:</h2>
-    <pre id="storedItems"></pre>
+    <!-- Data View -->
+    <div id="dataView" class="view">
+        <h2>All Stored Items:</h2>
+        <pre id="storedItems"></pre>
+        <button id="backBtn">Back</button>
+    </div>
 
     <script>
+        const apiUrl = 'https://<your-render-url>'; // Replace with your Render URL
+
+        const inputView = document.getElementById('inputView');
+        const dataView = document.getElementById('dataView');
         const form = document.getElementById('dataForm');
         const responseEl = document.getElementById('response');
-        const viewDataBtn = document.getElementById('viewDataBtn');
         const storedItemsEl = document.getElementById('storedItems');
+        const viewDataBtn = document.getElementById('viewDataBtn');
+        const backBtn = document.getElementById('backBtn');
 
-        const apiUrl = 'https://testapi-8i8z.onrender.com'; // Replace with your Render URL
-
-        // Handle form submit (POST)
+        // Handle form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const name = document.getElementById('name').value;
             const value = parseInt(document.getElementById('value').value);
-
             try {
                 const res = await fetch(`${apiUrl}/submit`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, value })
                 });
-
                 const data = await res.json();
                 responseEl.textContent = JSON.stringify(data, null, 2);
                 form.reset();
@@ -64,15 +66,23 @@
             }
         });
 
-        // Handle button click to fetch all stored items (GET)
+        // Switch to data view and fetch stored items
         viewDataBtn.addEventListener('click', async () => {
             try {
                 const res = await fetch(`${apiUrl}/data`);
                 const data = await res.json();
                 storedItemsEl.textContent = JSON.stringify(data, null, 2);
+                inputView.classList.remove('active');
+                dataView.classList.add('active');
             } catch (err) {
                 storedItemsEl.textContent = 'Error: ' + err;
             }
+        });
+
+        // Back to input view
+        backBtn.addEventListener('click', () => {
+            dataView.classList.remove('active');
+            inputView.classList.add('active');
         });
     </script>
 </body>

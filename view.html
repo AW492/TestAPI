@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Stored Data</title>
+</head>
+<body>
+    <h1>All Stored Data</h1>
+    <pre id="storedItems"></pre>
+
+    <script>
+        const storedItemsEl = document.getElementById('storedItems');
+        const apiUrl = 'https://<your-render-url>'; // Replace with your Render URL
+
+        async function fetchData() {
+            try {
+                const res = await fetch(`${apiUrl}/data`);
+                const data = await res.json();
+                storedItemsEl.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                storedItemsEl.textContent = 'Error: ' + err;
+            }
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>

@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI()
+# Temporary in-memory storage
+stored_items = []
 
 @app.get("/")
 def root():
@@ -25,4 +27,10 @@ class Item(BaseModel):
 # POST test
 @app.post("/submit")
 def submit_data(item: Item):
-    return {"received_name": item.name, "received_value": item.value}
+    stored_items.append(item.dict())
+    return {"message": "Item stored successfully", "data": item.dict()}
+
+# New endpoint to view stored items
+@app.get("/data")
+def get_data():
+    return {"stored_items": stored_items}
